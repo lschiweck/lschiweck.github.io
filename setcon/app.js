@@ -851,7 +851,7 @@
         for (const gk of GORDER) {
           const k = ks((x) => D.group[x] === gk); if (!k.length) continue;
           h += item(k, D.group_names[gk], GVAR[gk]);
-          c += `<div class="kg">${item(k, D.group_names[gk], GVAR[gk], " kgh")}<span class="kcs">${k.map((x) => item([x], D.classes[x], null, " kc")).join("")}</span></div>`;
+          c += `<div class="kg">${item(k, D.group_names[gk], GVAR[gk], " kgh")}<span class="kcs">${k.map((x) => item([x], D.classes[x], GVAR[gk], " kc")).join("")}</span></div>`;
         }
       }
       keyEl.innerHTML = h; clsEl.innerHTML = c; clsEl.hidden = !c; keyEl.classList.toggle("gm", !!c);   // phone: the class list carries the groups
