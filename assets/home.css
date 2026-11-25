@@ -463,7 +463,7 @@ html[data-h="4"] .hb-text > * { pointer-events: auto; }
 @media (min-width: 900px) {
   html[data-h="4"] .hb-field { min-height: clamp(600px, 78svh, 1080px); }   /* compact: the research begins above the fold */
   html[data-h="4"] .hb-text { min-height: 0; padding-top: max(84px, 9svh); padding-bottom: 0; }
-  html[data-h="4"] .hb-name { font-size: clamp(3.75rem, min(6.4vw, 11svh), 7rem); }
+  html[data-h="4"] .hb-name { font-size: clamp(2.5rem, min(3.9vw, 6.6svh), 4.25rem); }
   html[data-h="4"] .hb .intro { margin-top: clamp(14px, 2svh, 22px); }
   html[data-h="4"] .hb .links { margin-top: clamp(16px, 2.4svh, 24px); }
 }
@@ -518,7 +518,7 @@ html[data-v="b"] .pj-plate, html[data-v="b"] .pj-more .pj .pj-plate { aspect-rat
 @media (max-width: 899px) { html[data-h="4"] .h3-glow { display: none; } }
 /* on a phone the stage is a box under the name block: its picture fades out at the top and the bottom into the field */
 @media (max-width: 899px) { html[data-h="4"] .h3-canvas, html[data-h="4"] .h3-poster { -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 84%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 7%, #000 84%, transparent 100%); } }
-@media (max-width: 899px) { html[data-h="4"] .hb-name { padding-top: 0; margin-top: 92px; } }
+@media (max-width: 899px) { html[data-h="4"] .hb-name { padding-top: 0; margin-top: 92px; font-size: clamp(2.5rem, 12.5vw, 3.5rem); } }
 
 /* b4: a quiet hint at the bottom of the head, in line with the name: it scrolls to the research, and goes once one scrolls */
 .hb-more { position: absolute; z-index: 3; left: var(--gut); bottom: 10px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 0;
