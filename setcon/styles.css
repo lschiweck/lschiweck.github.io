@@ -305,6 +305,11 @@ input[type="range"]:hover::-webkit-slider-thumb, input[type="range"]:active::-we
 .seg button:disabled:hover { color: var(--ink-2) }
 #map, #mapFade, .map-key, .map-cls { transition: opacity .28s var(--ease) }
 #mapFade { opacity: 0; pointer-events: none }
+/* the reset of the pinned classes: shown only while classes are pinned */
+.map-clear { position: absolute; z-index: 3; right: 14px; bottom: 12px; padding: 5px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink-2); font: inherit; font-size: 0.8125rem; line-height: 1.3; cursor: pointer; transition: color .2s, border-color .2s }
+.map-clear:hover { color: var(--ink); border-color: var(--line-2) }
+.map-clear:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.map-clear[hidden] { display: none }
 .map-tip { position: absolute; left: 0; top: 0; z-index: 3; padding: 4px 9px; border-radius: 6px; background: var(--bg); color: var(--ink); font-size: 0.8125rem; line-height: 1.3; white-space: nowrap; pointer-events: none; box-shadow: 0 1px 3px rgba(0, 0, 0, .14) }
 /* the legend: in the head band of the map, opposite the model's name (one line, above the dots); on a phone under the map */
 .map-wrap .map-key { position: absolute; z-index: 2; top: 14px; right: 18px; left: 190px; justify-content: flex-end; gap: 4px 20px }

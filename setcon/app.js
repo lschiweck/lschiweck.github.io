@@ -788,6 +788,7 @@
     // ---------------------------------------------------------------- highlight: hover (legend or dot) over a pinned choice (tap / click)
     const hl = { set: null, f: 0, key: null };
     let hoverK = null, pinK = null;
+    const clearBtn = $("mapClear");
     // ---------------------------------------------------------------- one frame clock for the model move and the highlight
     let raf = 0, last = null;
     const tw = { move: null, hl: null };
@@ -872,6 +873,7 @@
     const togglePin = (ks) => { const S = toSet(pinK), a = ks.split(","), all = a.every((k) => S.has(k)); a.forEach((k) => (all ? S.delete(k) : S.add(k))); pinK = fromSet(S); };
     function markKey() {
       const on = onKeys(), set = on ? on.split(",") : [], pinned = toSet(pinK);
+      clearBtn.hidden = !pinK;
       for (const el of keyEls) {
         el.classList.toggle("hl", !!on);
         el.querySelectorAll(".ki").forEach((b) => {
@@ -888,6 +890,7 @@
       if (REDUCED) { hl.f = on ? 1 : 0; if (!on) hl.set = null; drawAll(); return; }
       tw.hl = { t0: performance.now(), a: hl.f, b: on ? 1 : 0 }; kick();
     }
+    clearBtn.addEventListener("click", () => { pinK = null; hoverK = null; tip.hidden = true; applyHL(); });
     const kOf = (e) => { const b = e.target.closest && e.target.closest(".ki"); return b ? b.dataset.k : null; };
     for (const el of keyEls) {
       el.addEventListener("pointerover", (e) => { const k = kOf(e); if (k && e.pointerType === "mouse") { hoverK = k; applyHL(); } });
