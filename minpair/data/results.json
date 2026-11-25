@@ -1,0 +1,105 @@
+{
+ "paper": "MinPair: Measured Minimal Pairs for Fine-Grained Control in Text-to-Motion Generation",
+ "note": "The values of the paper that the page draws, with the digits the paper prints.",
+ "pv": {
+  "v365.res.m2orig.rules": {
+   "v": 1.4312489350826376,
+   "p": {
+    "1": "1.4"
+   }
+  },
+  "std.m2orig.m2m.seq": {
+   "v": 0.729,
+   "p": {
+    "3": "0.729"
+   }
+  },
+  "v365.res.ctl.rules": {
+   "v": 11.38183676946669,
+   "p": {
+    "1": "11.4"
+   }
+  },
+  "std.m2.m2m.seq": {
+   "v": 0.819,
+   "p": {
+    "3": "0.819"
+   }
+  },
+  "v365.res.nopair.rules": {
+   "v": 10.54694155733515,
+   "p": {
+    "1": "10.5"
+   }
+  },
+  "std.nopair.m2m.seq": {
+   "v": 0.837,
+   "p": {
+    "3": "0.837"
+   }
+  },
+  "v365.res.MAIN.rules": {
+   "v": 60.214687340262394,
+   "p": {
+    "1": "60.2"
+   }
+  },
+  "std.MAIN.m2m.seq": {
+   "v": 0.83,
+   "p": {
+    "3": "0.830"
+   }
+  },
+  "v365.cmp.MAIN.part.rules": {
+   "v": 60.214687340262394,
+   "p": {
+    "0": "60",
+    "1": "60.2"
+   }
+  },
+  "data.hours": {
+   "v": 30.25754222222212,
+   "p": {
+    "0": "30"
+   }
+  },
+  "v365.cmp.kimo.sent.rules": {
+   "v": 17.12121212121212,
+   "p": {
+    "0": "17",
+    "1": "17.1"
+   }
+  },
+  "kimo.hours": {
+   "v": 700.0,
+   "p": {
+    "0": "700"
+   }
+  },
+  "kimo.hoursratio": {
+   "v": 23.13472769397302,
+   "p": {
+    "0": "23"
+   }
+  },
+  "v365.cmp.hy.sent.rules": {
+   "v": 22.53116011505273,
+   "p": {
+    "0": "23",
+    "1": "22.5"
+   }
+  },
+  "hy.hours": {
+   "v": 3000.0,
+   "p": {
+    "0": "3,000"
+   }
+  },
+  "hy.hoursratio": {
+   "v": 99.14883297417008,
+   "p": {
+    "0": "99"
+   }
+  }
+ }
+}

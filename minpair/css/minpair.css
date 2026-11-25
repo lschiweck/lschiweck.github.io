@@ -1,0 +1,164 @@
+/* MinPair project page, v15 (from v14's v12.css). The shared frame (frame/frame.css, loaded before this file) gives the type,
+   the neutrals, the head block, the link bar, the slim top bar, the citation and the footer with the funding band; this file
+   keeps what is MinPair's own: the story player in one screen, its captions and figures, the grid of other words. One
+   emphasis: the accent colour, in three tones where three values of one word are shown at once. It belongs to the word that
+   changes and to what that word measures on the body. */
+
+/* ---------------------------------------------------------------- tokens: the neutrals and the accent of the frame, the three
+   tones of MinPair */
+:root {
+  --bg: var(--fr-bg); --bg-2: var(--fr-bg-2); --bg-3: var(--fr-bg-3);
+  --ink: var(--fr-ink); --ink-2: var(--fr-ink-2); --ink-3: var(--fr-ink-3); --line: var(--fr-line);
+  --accent: var(--fr-accent);
+  --t0: #e08a52; --t1: #c4501a; --t2: #7d2e0b;
+  --sans: var(--fr-sans);
+  --gutter: var(--fr-gutter); --maxw: 1040px;
+  --ease: var(--fr-ease);
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --t0: #c86a33; --t1: #f2a46f; --t2: #fbd9bf } }
+:root[data-theme="dark"] { --t0: #c86a33; --t1: #f2a46f; --t2: #fbd9bf }
+
+/* ---------------------------------------------------------------- base (type and colours from the frame) */
+* { box-sizing: border-box }
+html { -webkit-text-size-adjust: 100% }
+body { overflow-x: clip }
+h1, h2, h3, p, figure, pre, ol, ul { margin: 0 }
+ol, ul { padding: 0; list-style: none }
+a { color: inherit }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 6px }
+.wrap { width: min(100% - 2 * var(--gutter), var(--maxw)); margin-inline: auto }
+.sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+
+/* ---------------------------------------------------------------- the player: one screen, the page scrolls past it */
+.story { position: relative; height: 800vh }                     /* set by story.js: one screen per step */
+.stage { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; contain: strict }
+.stage:focus-visible { outline-offset: -4px; border-radius: 0 }
+.stage > * { position: absolute; left: 0; top: 0; transform-origin: 0 0 }
+.stage > .gl, .stage > .fig, .stage > .chart { width: 100%; height: 100%; pointer-events: none }
+/* v17: the bodies are videos, one per view of v16 (media.js): the tile is the view's rectangle (it clips like v16's scissor),
+   the video inside it is placed at the page's scale; opaque, its background is the page colour */
+.stage > .gl { isolation: isolate; will-change: transform }   /* its own layer under the rest, as v16's canvas was */
+.tile { position: absolute; left: 0; top: 0; overflow: hidden; visibility: hidden; pointer-events: none; contain: strict; background: var(--bg) }   /* opaque over its whole rectangle, like the video in it */
+.tile > video { position: absolute; left: 0; top: 0; display: block; max-width: none; object-fit: fill; background: transparent; pointer-events: none }
+html.js .stage:not(.live) > :not(.hd) { visibility: hidden }
+html:not(.js) .story { height: auto } html:not(.js) .stage { height: auto; overflow: visible; padding: 40px var(--gutter); contain: none }
+html:not(.js) .stage > * { position: static } html:not(.js) .stage > :not(.hd) { display: none }
+html.nogl .stage > * { visibility: visible }
+
+/* the head block of the frame, centred above the stage (story.js places it and fades it with the first step). Type, sizes
+   and colours are the frame's; in the stage its vertical gaps are a little tighter, so that the opening keeps the room of
+   v14 for its bodies. The subtitle breaks into two balanced lines as in the frame's other heads */
+.hd { width: 100%; padding: 0 var(--gutter) }
+.hd .fr-sub { max-width: 21em }
+.hd .fr-authors { margin-top: 14px }
+.hd .fr-btns { margin-top: 14px }   /* frame v2: the buttons (were the underlined words, 8 px) */
+@media (max-width: 719px) { .hd .fr-title { gap: 8px } .hd .fr-authors { margin-top: 10px } .hd .fr-btns { margin-top: 10px } }   /* frame v2, phones: 12 px of the two button rows back for the opening */
+@media (max-width: 719px) and (max-height: 700px) { .hd .fr-name { font-size: 2.25rem } .hd .fr-sub { font-size: 1.0625rem } .hd .fr-btns { margin-top: 8px } }   /* frame v2, short phones: the name and subtitle a step smaller, so the opening's words stay above the player */
+.hd .fr-affil > span { text-wrap: balance }
+
+.beat { padding: 0 var(--gutter); font-size: clamp(1.125rem, 0.8rem + 1.1vw, 1.5rem); line-height: 1.2; font-weight: 600; letter-spacing: -0.014em; text-align: center; text-wrap: balance; pointer-events: none }
+
+/* captions as aligned lines: the shared words in the same place, the one word that differs in its tone */
+.lines { font-size: clamp(0.9rem, 0.72rem + 0.6vw, 1.125rem); line-height: 1.4; text-align: left; color: var(--ink-2); pointer-events: none }
+.lines .l + .l { margin-top: 3px }
+.lines.nw .l { white-space: nowrap }
+.lines .w { font-weight: 600; white-space: nowrap }
+.lines .mk { display: inline-block; width: 1.5em; color: var(--ink-3); font-weight: 600 }
+.t0 { color: var(--t0) } .t1 { color: var(--t1) } .t2 { color: var(--t2) }
+.ti { color: var(--ink) } .ta { color: var(--accent) }
+
+/* guides at a landmark of the body, figure labels */
+.gd { width: 100px; height: 1.25px; margin-top: -0.6px; background: currentColor; transform-origin: 0 50%; pointer-events: none }
+.tib { color: var(--ink) } .tab { color: var(--accent) }
+.t0b { color: var(--t0) } .t1b { color: var(--t1) } .t2b { color: var(--t2) }
+.vw { font-size: clamp(0.85rem, 0.75rem + 0.3vw, 1rem); line-height: 20px; font-weight: 600; white-space: nowrap; pointer-events: none }
+.gll { font-size: 0.75rem; line-height: 18px; color: var(--ink-3); white-space: nowrap; pointer-events: none }
+.fl { font-size: 0.8125rem; line-height: 18px; color: var(--ink-2); white-space: nowrap; pointer-events: none }
+
+/* the player bar: back, play, forward and one mark per step on the timeline */
+.player { left: 50%; top: auto; bottom: 12px; width: min(760px, 100% - 48px); height: 48px; margin-left: calc(min(760px, 100% - 48px) / -2);
+  display: flex; align-items: center; gap: 2px; color: var(--ink-2); z-index: 5 }
+.pb { flex: 0 0 auto; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: var(--ink-2); transition: color 0.2s, background 0.2s }
+.pb:hover { color: var(--ink); background: var(--bg-2) }
+.pb svg { width: 18px; height: 18px }
+.pb.play { width: 42px; height: 42px; color: var(--ink) }
+.pb.play svg { width: 20px; height: 20px }
+.track { position: relative; flex: 1 1 auto; height: 38px; margin: 0 10px 0 12px; cursor: pointer }
+.track .rail, .track .fill { position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; border-radius: 1px; background: var(--line); pointer-events: none }
+.track .fill { background: var(--ink-2); transform-origin: 0 50%; transform: scaleX(0) }
+.ck { position: absolute; top: 50%; width: 22px; height: 30px; margin: -15px 0 0 -11px; display: grid; place-items: center }
+.ck::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--ink-3); transition: transform 0.2s var(--ease), background 0.2s, border-color 0.2s }
+.ck.past::before { background: var(--ink-2); border-color: var(--ink-2) }
+.ck.on::before { background: var(--ink); border-color: var(--ink); transform: scale(1.45) }
+.ck:hover::before { transform: scale(1.6); border-color: var(--ink) }
+.tip { position: absolute; left: 0; top: -26px; font-size: var(--fr-size-fine); line-height: 20px; padding: 0 2px; color: var(--ink); white-space: nowrap; opacity: 0; transition: opacity 0.15s; pointer-events: none; transform: translateX(-50%) }
+.tip.on { opacity: 1 }
+html.reduced .pb.play { display: none }
+/* v20: the bar is the story's time line: a finger on it scrubs (no page pan, no text selection); a grip at the playhead shows on
+   hover, while dragging and on keyboard focus (it is the bar's slider); the bar keeps its look */
+.track { touch-action: none; -webkit-user-select: none; user-select: none }
+.track .grip { position: absolute; left: 0; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--ink);
+  opacity: 0; transition: opacity 0.15s; pointer-events: none; z-index: 1 }
+.track.hov .grip, .track.drag .grip, .track .grip:focus-visible { opacity: 1 }
+.track .grip:focus-visible { outline-offset: 3px; border-radius: 50% }
+
+/* ---------------------------------------------------------------- other attributes: rows in the page */
+.others { padding: clamp(56px, 10svh, 104px) 0 0 }
+.others .fr-h2, .cite .fr-h2 { text-align: center }
+.lede { margin: 12px auto 0; max-width: 36em; text-align: center; text-wrap: balance }
+.grid { position: relative; width: min(100% - 24px, 1000px); margin: clamp(28px, 5svh, 48px) auto 0; display: grid; grid-template-columns: 1fr; gap: 34px }   /* one row per line, every row the same width */
+.row { position: relative; z-index: 1; text-align: center; outline-offset: 4px; cursor: default }
+.rn { font-size: var(--fr-size-small); line-height: 1.3; font-weight: 600; letter-spacing: 0.02em; color: var(--ink-2); transition: opacity 0.2s }
+.bx { position: relative; height: clamp(190px, 26vw, 290px); margin-top: 4px }
+/* the caption has its own line under the words: its space is always reserved, so showing it covers and moves nothing */
+.rc { position: relative; margin: 8px auto 0; max-width: 34em; min-height: 4.1em; font-size: var(--fr-size-fine); line-height: 1.35; color: var(--ink-2); text-wrap: balance; opacity: 0; transition: opacity 0.2s; pointer-events: none }
+.row:hover .rc, .row:focus .rc, .row.show .rc { opacity: 1 }
+.gap { display: inline-block; width: 3.6em; height: 1em; vertical-align: -0.12em; border-bottom: 1.5px solid var(--accent) }
+.rv { position: relative; height: 1.5em; margin-top: 6px }
+@media (hover: none) { .rc { opacity: 0.85 } }                   /* no hover on a phone: the caption stays readable in its line */
+.rv li { position: absolute; top: 0; padding: 0 2px; text-align: center; font-size: 0.9375rem; line-height: 1.2; font-weight: 600; text-wrap: balance }
+
+/* ---------------------------------------------------------------- back to the top: a word of the link bar under the grid, the
+   round button once the story has scrolled away (story.js) */
+.up { margin: clamp(28px, 5svh, 44px) 0 0; justify-content: center }
+/* v17: what follows the grid is no scroll anchor: the rows are built into the empty grid after the page has loaded, and the
+   browser would otherwise move the page down by their height while it restores the position of a reload (it then restores
+   the position exactly; v16 landed at the top of the grid) */
+.others .up, .cite, .fr-foot { overflow-anchor: none }
+/* frame v2: the round button is the frame's (.fr-totop: filled with the ink, 46 px, on phones 44 px). Before it was filled with
+   the page colour with a 1.3:1 border, and 38 px on phones, hard to see over the grid */
+
+/* the slim top bar is the frame's (frame.css, .fr-topnav); story.js shows it from the second step on, the story keeps its top
+   48 px free for it */
+
+/* ---------------------------------------------------------------- citation: the frame's block, centred in the page; the title
+   line of the BibTeX fits on a wide screen and wraps below */
+.cite { padding: clamp(64px, 12svh, 120px) 0 0 }
+.cite .fr-cite { max-width: 56rem; margin-inline: auto }
+.cite .fr-cite > .fr-links { justify-content: center }
+@media (max-width: 1000px) { .cite .fr-bib { white-space: pre-wrap; overflow-wrap: anywhere } }
+
+@media (max-width: 719px) {
+  .player { bottom: 8px; height: 56px; width: calc(100% - 16px); margin-left: calc((100% - 16px) / -2) }
+  .pb { width: 44px; height: 44px } .pb.play { width: 48px; height: 48px }
+  .track { height: 44px; margin: 0 8px 0 6px }
+  .ck { width: 18px; height: 44px; margin: -22px 0 0 -9px }
+  .ck::before { width: 6px; height: 6px }
+  .rv li { font-size: 0.8125rem }
+  .fl, .gll { font-size: 0.75rem }
+}
+@media (max-width: 520px) { .rv li { font-size: 0.875rem } }   /* frame v2, phones: the value words of the grid one step larger */
+
+/* after the last step a small signal that the page goes on below (fades in, the chevron moves gently) */
+.stage > .more-hint { left: 50%; top: auto; bottom: 74px; transform: translate(-50%, 6px); display: flex; flex-direction: column;
+  align-items: center; gap: 2px; color: var(--ink-2); font-size: var(--fr-size-small); text-decoration: none; opacity: 0; visibility: hidden;
+  transition: opacity 0.45s ease, transform 0.45s ease, visibility 0s linear 0.45s; z-index: 6 }
+.stage > .more-hint.on { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition: opacity 0.45s ease, transform 0.45s ease }
+.stage > .more-hint svg { width: 20px; height: 20px }
+/* v16: the chevron moves only while the hint shows (a running animation on the hidden hint dirtied the style of every frame) */
+.stage > .more-hint.on svg { animation: mh-bob 1.6s ease-in-out infinite }
+.stage > .more-hint:hover { color: var(--ink) }
+@keyframes mh-bob { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(4px) } }
+@media (prefers-reduced-motion: reduce) { .stage > .more-hint.on svg { animation: none } .stage > .more-hint, .stage > .more-hint.on { transition: none } }
+@media (max-width: 700px) { .stage > .more-hint { bottom: 72px; font-size: var(--fr-size-fine) } }

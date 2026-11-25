@@ -1,0 +1,260 @@
+/* Frame: the shared design language of the project pages (SetCon, MinPair). One typeface, one set of neutrals and one
+   accent per page. The pages keep their own heroes and figures; the frame gives them the same type, head block, link bar,
+   slim top bar, citation block and footer with the funding band.
+   v2 (20.11.2026, v395): the head block's links are buttons (.fr-btns: Paper, arXiv, Code, Model, Data, BibTeX, a button
+   without a target stays visible, greyed, with "soon"), the round back-to-the-top button (.fr-totop), the greys a little
+   darker (WCAG AA for text on every surface of the pages), and on phones a little larger small type and 44-px targets.
+
+   Use: copy the folder frame/ unchanged next to the page's fonts/ folder, load frame.css before the page's own CSS and
+   frame.js (after config.js) at the end of <body>. The <html> element names the paper and the key under which the theme
+   is remembered: <html lang="en" data-paper="setcon" data-fr-store="setcon-theme">. Classes start with fr-, variables
+   with --fr-. The page's own CSS may read every --fr- token. */
+
+@font-face { font-family: "Instrument Sans"; font-style: normal; font-weight: 400 700; font-stretch: 75% 100%; font-display: swap; src: url(../fonts/InstrumentSans-var.woff2) format("woff2"); }
+
+/* ---------------------------------------------------------------- tokens */
+:root {
+  --fr-bg: #f6f6f3; --fr-bg-2: #ecece8; --fr-bg-3: #e1e1dc;
+  --fr-ink: #17171c; --fr-ink-2: #50515a; --fr-ink-3: #65666f;   /* v2: were #585962, #7b7c85 (3.4:1 on the panels) */
+  --fr-line: #d9d9d4; --fr-line-2: #e8e8e3; --fr-rule: #c4c4bd;
+  --fr-plate: #ffffff;
+  --fr-accent: #5a48e0; --fr-accent-ink: #4a3bc6; --fr-accent-soft: rgba(90, 72, 224, 0.12);
+  /* v2: the buttons of the head block and the back-to-the-top button: ink-filled pills, the icon in the accent of the other
+     theme (light on the dark pill), the accent on hover; without a target a greyed pill */
+  --fr-btn-bg: var(--fr-ink); --fr-btn-ink: var(--fr-bg); --fr-btn-icon: #b5adff; --fr-on-accent: #ffffff;
+  --fr-btn-off-bg: var(--fr-bg-2); --fr-btn-off-ink: var(--fr-ink-3); --fr-btn-off-line: var(--fr-line);
+  --fr-sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --fr-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --fr-gutter: clamp(16px, 4vw, 64px);
+  --fr-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* type scale: name 42-64, subtitle 19-24, section 24-32, lead 18, body 17, small 14, fine 13 (px) */
+  --fr-size-name: clamp(2.625rem, 1.6rem + 3vw, 4rem);
+  --fr-size-sub: clamp(1.1875rem, 0.95rem + 0.8vw, 1.5rem);
+  --fr-size-h2: clamp(1.5rem, 1.15rem + 1vw, 2rem);
+  --fr-size-lead: 1.125rem; --fr-size-body: 1.0625rem; --fr-size-small: 0.875rem; --fr-size-fine: 0.8125rem;
+  color-scheme: light;
+}
+:root[data-paper="minpair"] { --fr-accent: #c4501a; --fr-accent-ink: #a9440f; --fr-accent-soft: rgba(196, 80, 26, 0.12); --fr-btn-icon: #f2a46f }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fr-bg: #121317; --fr-bg-2: #191a1f; --fr-bg-3: #22232a;
+    --fr-ink: #ececea; --fr-ink-2: #adaeb5; --fr-ink-3: #94959d;
+    --fr-line: #2c2d34; --fr-line-2: #222329; --fr-rule: #4a4b53;
+    --fr-plate: #f4f4f0;
+    --fr-accent: #a79dff; --fr-accent-ink: #b5adff; --fr-accent-soft: rgba(167, 157, 255, 0.16);
+    --fr-btn-icon: #5a48e0; --fr-on-accent: #121317; --fr-btn-off-bg: var(--fr-bg-3); --fr-btn-off-line: #33343c;
+    color-scheme: dark; }
+  :root[data-paper="minpair"]:not([data-theme="light"]) { --fr-accent: #f2a46f; --fr-accent-ink: #f2a46f; --fr-accent-soft: rgba(242, 164, 111, 0.16); --fr-btn-icon: #c4501a }
+}
+:root[data-theme="dark"] {
+  --fr-bg: #121317; --fr-bg-2: #191a1f; --fr-bg-3: #22232a;
+  --fr-ink: #ececea; --fr-ink-2: #adaeb5; --fr-ink-3: #94959d;
+  --fr-line: #2c2d34; --fr-line-2: #222329; --fr-rule: #4a4b53;
+  --fr-plate: #f4f4f0;
+  --fr-accent: #a79dff; --fr-accent-ink: #b5adff; --fr-accent-soft: rgba(167, 157, 255, 0.16);
+  --fr-btn-icon: #5a48e0; --fr-on-accent: #121317; --fr-btn-off-bg: var(--fr-bg-3); --fr-btn-off-line: #33343c;
+  color-scheme: dark; }
+:root[data-paper="minpair"][data-theme="dark"] { --fr-accent: #f2a46f; --fr-accent-ink: #f2a46f; --fr-accent-soft: rgba(242, 164, 111, 0.16); --fr-btn-icon: #c4501a }
+
+/* ---------------------------------------------------------------- base type */
+body { margin: 0; background: var(--fr-bg); color: var(--fr-ink); font: 400 var(--fr-size-body)/1.55 var(--fr-sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility }
+.fr-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+.fr-h2 { margin: 0; font-size: var(--fr-size-h2); line-height: 1.18; font-weight: 560; letter-spacing: -0.018em; text-wrap: balance }
+.fr-lead { margin: 0; font-size: var(--fr-size-lead); line-height: 1.55; color: var(--fr-ink-2) }
+.fr-lead b, .fr-lead strong { color: var(--fr-ink); font-weight: 540 }
+.fr-caption { margin: 0; font-size: var(--fr-size-small); line-height: 1.5; color: var(--fr-ink-2) }
+.fr-caption b { color: var(--fr-ink); font-weight: 540 }
+
+/* ---------------------------------------------------------------- head block: name, subtitle, authors, affiliations, links.
+   Left-aligned by default; .fr-center centres it (a head above a full-width stage). */
+.fr-head { display: grid; justify-items: start; text-align: left }
+.fr-head.fr-center { justify-items: center; text-align: center }
+.fr-title { margin: 0; display: grid; gap: 12px; justify-items: inherit; font-weight: 400 }
+.fr-name { font-size: var(--fr-size-name); line-height: 0.95; font-weight: 600; font-stretch: 96%; letter-spacing: -0.035em }
+.fr-sub { font-size: var(--fr-size-sub); line-height: 1.28; font-weight: 450; letter-spacing: -0.016em; max-width: 30ch; text-wrap: balance }
+.fr-authors { margin: 24px 0 0; font-size: 0.96875rem; line-height: 1.45; color: var(--fr-ink) }
+.fr-authors > span, .fr-affil > span { white-space: nowrap }
+.fr-head sup { font-size: 0.7em; line-height: 0; vertical-align: 0.55em; margin-left: 1px; color: var(--fr-ink-2) }
+.fr-affil { margin: 2px 0 0; font-size: var(--fr-size-small); line-height: 1.45; color: var(--fr-ink-2); display: flex; flex-wrap: wrap; gap: 0 16px }
+.fr-affil sup { margin: 0 2px 0 0 }
+.fr-center .fr-affil { justify-content: center }
+
+/* ---------------------------------------------------------------- link bar: underlined words, the underline turns to the accent
+   on hover. Fixed order Paper, arXiv, Code, Model, Data, BibTeX; a link without href is not shown (frame.js sets the href
+   from config.js only when there is a target). The same look serves buttons (Copy). */
+.fr-links { margin: 0 -10px; padding: 0; display: flex; flex-wrap: wrap; gap: 2px 6px }
+.fr-head .fr-links { margin-top: 22px }
+.fr-center .fr-links { justify-content: center; margin-inline: 0 }
+.fr-links a, .fr-links button { display: inline-flex; align-items: center; min-height: 40px; padding: 0 10px; border: 0; border-radius: 4px; background: none; cursor: pointer;
+  font: 500 0.96875rem/1 var(--fr-sans); color: var(--fr-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; text-decoration-color: var(--fr-rule);
+  white-space: nowrap; transition: text-decoration-color .18s, color .18s }
+.fr-links a:hover, .fr-links button:hover { text-decoration-color: var(--fr-accent) }
+.fr-links a:not([href]) { display: none }
+.fr-links a:focus-visible, .fr-links button:focus-visible { outline: 2px solid var(--fr-accent); outline-offset: 0 }
+
+/* ---------------------------------------------------------------- v2: the head block's buttons. Pills in one row, an icon and a
+   word each, in the fixed order Paper, arXiv, Code, Model, Data, BibTeX, the same on every page. frame.js gives a button
+   with data-fr-link its href from config.js; a button without href stays in the row, greyed and not clickable, and says
+   "soon": under the pointer as a small label below it, on touch screens (no pointer to hover with) always, under its word.
+   Where the six do not fit in one row (one row needs 602 px; a head narrower than 620 px, which includes SetCon's head
+   column at every width), they stand in two rows of three of one width (3 x 101 px + gaps = 319 px); below 322 px the
+   pills get narrower (3 x 93 px), below 298 px two columns.
+   Markup: <nav class="fr-btns"><a class="fr-btn" data-fr-link="code"><svg/><span class="fr-w">Code</span><span class="fr-soon">soon</span></a>…</nav> */
+.fr-head { container: fr-head / inline-size }
+.fr-btns { margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px }
+.fr-head .fr-btns { margin-top: 24px }
+.fr-center .fr-btns { justify-content: center }
+.fr-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 40px; padding: 0 17px 0 14px; border-radius: 999px;
+  background: var(--fr-btn-bg); color: var(--fr-btn-ink); font: 540 0.9375rem/1 var(--fr-sans); letter-spacing: -0.005em; text-decoration: none; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent; transition: background-color .18s, color .18s }
+.fr-btn svg { width: 16px; height: 16px; flex: none; color: var(--fr-btn-icon); transition: color .18s }
+.fr-btn[href]:hover { background: var(--fr-accent); color: var(--fr-on-accent) }
+.fr-btn[href]:hover svg { color: inherit }
+.fr-btn:focus-visible { outline: 2px solid var(--fr-accent); outline-offset: 2px; border-radius: 999px }
+.fr-btn:not([href]) { background: var(--fr-btn-off-bg); color: var(--fr-btn-off-ink); box-shadow: inset 0 0 0 1px var(--fr-btn-off-line); cursor: default }
+.fr-btn:not([href]) svg { color: inherit }
+.fr-soon { display: none }
+@media (hover: hover) {
+  .fr-btn:not([href]) .fr-soon { display: block; position: absolute; left: 50%; top: 100%; margin-top: 6px; padding: 4px 8px; border-radius: 6px; z-index: 5;
+    background: var(--fr-ink); color: var(--fr-bg); font: 500 0.75rem/1.2 var(--fr-sans); letter-spacing: 0.01em; white-space: nowrap; pointer-events: none;
+    opacity: 0; transform: translate(-50%, -3px); transition: opacity .15s, transform .15s }
+  .fr-btn:not([href]):hover .fr-soon { opacity: 1; transform: translate(-50%, 0) }
+}
+@media (hover: none) {
+  .fr-btn:not([href]) { display: inline-grid; grid-template-columns: auto auto; grid-template-rows: auto auto; align-content: center; justify-content: center; column-gap: 7px; row-gap: 2px }
+  .fr-btn:not([href]) svg { grid-row: 1 / span 2; align-self: center }
+  .fr-btn:not([href]) .fr-soon { display: block; font: 500 0.6875rem/1 var(--fr-sans); letter-spacing: 0.02em }
+}
+@container fr-head (max-width: 620px) {
+  .fr-btns { display: grid; grid-template-columns: repeat(3, 1fr); width: max-content; max-width: 100% }
+  .fr-center .fr-btns { margin-inline: auto }
+}
+@container fr-head (max-width: 322px) { .fr-btn { padding: 0 12px 0 10px; gap: 6px } }
+@container fr-head (max-width: 298px) { .fr-btns { grid-template-columns: repeat(2, 1fr) } }
+
+/* ---------------------------------------------------------------- slim top bar: slides in once the hero has left the screen */
+.fr-topnav { position: fixed; top: 0; left: 0; right: 0; z-index: 30; height: 48px; display: flex; align-items: center; gap: 22px;
+  padding: 0 max(var(--fr-gutter), env(safe-area-inset-right)) 0 max(var(--fr-gutter), env(safe-area-inset-left));
+  background: var(--fr-bg); border-bottom: 1px solid var(--fr-line-2); font-family: var(--fr-sans);
+  transform: translateY(-100%); visibility: hidden; transition: transform .28s var(--fr-ease), visibility 0s linear .28s }
+.fr-topnav.on { transform: none; visibility: visible; transition: transform .28s var(--fr-ease), visibility 0s }
+.fr-topnav a { color: inherit; text-decoration: none }
+.fr-tn-brand { font-weight: 600; font-stretch: 96%; letter-spacing: -0.03em; font-size: 1.0625rem; color: var(--fr-ink); padding: 6px 0 }
+.fr-tn-brand:hover { color: var(--fr-accent-ink) }
+.fr-tn-links { display: flex; gap: 18px; font-size: var(--fr-size-small); color: var(--fr-ink-2); margin-left: 4px; min-width: 0 }
+.fr-tn-links a { padding: 6px 0; transition: color .15s; white-space: nowrap }
+.fr-tn-links a:hover { color: var(--fr-accent-ink) }
+.fr-tn-theme { margin-left: auto; width: 34px; height: 34px; flex: none; display: grid; place-items: center; padding: 0; border: 0; background: none; cursor: pointer; color: var(--fr-ink-2); border-radius: 8px; transition: color .15s, background-color .15s }
+.fr-tn-theme svg { width: 18px; height: 18px }
+.fr-tn-theme:hover { color: var(--fr-ink); background: var(--fr-bg-2) }
+.fr-tn-theme .fr-moon { display: none }
+:root[data-theme="dark"] .fr-tn-theme .fr-sun { display: none }
+:root[data-theme="dark"] .fr-tn-theme .fr-moon { display: block }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fr-tn-theme .fr-sun { display: none } :root:not([data-theme="light"]) .fr-tn-theme .fr-moon { display: block } }
+/* the paper links in the top bar: the head block's link bar, small, at the right end beside the theme switch, so the paper
+   stays in reach once the head block has gone. Underlined words as in the link bar; Paper is marked by its ink and an
+   underline in the accent. A link without href (no target in config.js yet) is not shown */
+.fr-tn-paper { margin-left: auto; display: flex; align-items: center; gap: 2px; flex: none }
+.fr-tn-paper a { display: inline-flex; align-items: center; min-height: 34px; padding: 0 7px; border-radius: 4px; font: 500 var(--fr-size-small)/1 var(--fr-sans);
+  color: var(--fr-ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; text-decoration-color: var(--fr-rule);
+  white-space: nowrap; transition: color .15s, text-decoration-color .15s }
+.fr-tn-paper a:hover { color: var(--fr-ink); text-decoration-color: var(--fr-accent) }
+.fr-tn-paper a.fr-tn-main { color: var(--fr-ink); text-decoration-color: var(--fr-accent) }
+.fr-tn-paper a:not([href]) { display: none }
+.fr-tn-paper a:focus-visible { outline: 2px solid var(--fr-accent); outline-offset: 0 }
+.fr-tn-paper + .fr-tn-theme { margin-left: -8px }
+
+/* ---------------------------------------------------------------- v2: back to the top, a round button at the lower right in the
+   look of the head block's buttons. It shows once the page's opening has gone: frame.js with data-fr-after="<selector>"
+   (in once that element is above the screen), or the page's own script toggling the class "on" (MinPair's story) */
+.fr-totop { position: fixed; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); z-index: 25; width: 46px; height: 46px;
+  margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; background: var(--fr-btn-bg); color: var(--fr-btn-ink);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18); -webkit-tap-highlight-color: transparent; opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity .25s, transform .25s var(--fr-ease), visibility 0s linear .25s, background-color .18s, color .18s }
+.fr-totop svg { width: 20px; height: 20px; display: block }
+.fr-totop.on { opacity: 1; visibility: visible; transform: none; transition: opacity .25s, transform .25s var(--fr-ease), visibility 0s, background-color .18s, color .18s }
+.fr-totop:hover { background: var(--fr-accent); color: var(--fr-on-accent) }
+.fr-totop:focus-visible { outline: 2px solid var(--fr-accent); outline-offset: 3px; border-radius: 50% }
+
+/* ---------------------------------------------------------------- citation: heading, the BibTeX box, Copy and Paper below it */
+.fr-cite { display: grid; gap: 18px; max-width: 46rem }
+.fr-bib { margin: 0; padding: 20px 22px; border-radius: 12px; background: var(--fr-bg-2); font: 0.8125rem/1.6 var(--fr-mono); color: var(--fr-ink); white-space: pre; overflow-x: auto }
+.fr-cite .fr-links { margin-top: -8px }
+.fr-flash { animation: fr-flash 1.8s var(--fr-ease) both }
+@keyframes fr-flash { 0%, 55% { box-shadow: 0 0 0 2px var(--fr-accent); background-color: var(--fr-accent-soft) } 100% { box-shadow: 0 0 0 2px transparent; background-color: var(--fr-bg-2) } }
+
+/* ---------------------------------------------------------------- footer: the funding band (official file, unchanged, on a light
+   plate so that it also reads in the dark theme), the funding sentence, the page's credits, the colophon with the theme switch */
+.fr-foot { margin-top: clamp(72px, 10vw, 140px); padding: 0 max(var(--fr-gutter), env(safe-area-inset-right)) 44px max(var(--fr-gutter), env(safe-area-inset-left)); text-align: center; font-family: var(--fr-sans) }
+.fr-fin { max-width: 980px; margin: 0 auto; border-top: 1px solid var(--fr-line-2); padding-top: 32px; display: grid; gap: 16px; justify-items: center }
+.fr-fin p { margin: 0 }
+.fr-band { display: block; max-width: 100%; padding: 10px 12px; border-radius: 10px; background: var(--fr-plate) }
+.fr-band img { display: block; height: 42px; width: auto; max-width: 100% }
+.fr-fund { font-size: var(--fr-size-small); line-height: 1.5; color: var(--fr-ink-2); max-width: 34rem; text-wrap: balance }
+.fr-fund a, .fr-credits a { color: var(--fr-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: var(--fr-rule) }
+.fr-fund a:hover, .fr-credits a:hover { text-decoration-color: currentColor }
+.fr-credits a { white-space: nowrap }
+.fr-credits { font-size: var(--fr-size-fine); line-height: 1.5; color: var(--fr-ink-3); max-width: 44rem; text-wrap: balance }
+.fr-colo { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 20px; font-size: var(--fr-size-fine); line-height: 1.5; color: var(--fr-ink-3) }
+.fr-theme { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; text-decoration-color: var(--fr-rule); border-radius: 2px }
+.fr-theme:hover { color: var(--fr-ink); text-decoration-color: currentColor }
+.fr-t-light { display: none }
+:root[data-theme="dark"] .fr-t-dark { display: none } :root[data-theme="dark"] .fr-t-light { display: inline }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fr-t-dark { display: none } :root:not([data-theme="light"]) .fr-t-light { display: inline } }
+/* v2: Imprint and Privacy, two words of the colophon in the look of the theme switch; each opens a short panel under the
+   colophon (frame.js, one at a time; without JavaScript the address #fr-imprint or #fr-privacy shows it) */
+.fr-legal-links { display: flex; gap: 0 20px }
+.fr-legal-links a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; text-decoration-color: var(--fr-rule); border-radius: 2px }
+.fr-legal-links a:hover, .fr-legal-links a[aria-expanded="true"] { color: var(--fr-ink); text-decoration-color: currentColor }
+.fr-legal-panel { display: none; max-width: 34rem; font-size: var(--fr-size-fine); line-height: 1.55; color: var(--fr-ink-2); text-wrap: balance; scroll-margin-bottom: 76px }   /* opened, it stops above the back-to-the-top button */
+.fr-legal-panel.on, .fr-legal-panel:target { display: block }
+.fr-legal-panel p { margin: 0 }
+.fr-legal-panel a { color: var(--fr-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: var(--fr-rule) }
+.fr-legal-panel a:hover { text-decoration-color: currentColor }
+.fr-email a { white-space: nowrap }
+
+/* ---------------------------------------------------------------- phone */
+@media (max-width: 760px) {
+  .fr-head { min-width: 0 }
+  .fr-affil > span { white-space: normal }
+  .fr-links a, .fr-links button { min-height: 44px }
+  .fr-topnav { gap: 16px }
+  .fr-tn-links { gap: 14px }
+  .fr-tn-opt { display: none }
+  .fr-tn-paper a { padding: 0 6px; min-height: 44px }   /* v2: 40 -> 44 px to tap, same look */
+  .fr-tn-paper a[data-fr-link] { display: none }   /* v2: on phones the top bar keeps Paper and BibTeX, whatever config.js holds */
+  .fr-bib { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px 16px }
+  .fr-band { width: 100% }
+  .fr-band img { height: auto; width: 100% }
+  /* v2: 44-px targets without a visible change: the top bar's links and theme switch, the footer's theme switch, the buttons */
+  .fr-tn-brand { padding: 9px 0 }
+  .fr-tn-links a { padding: 12px 0 }
+  .fr-tn-theme { width: 44px; height: 44px; margin-right: -5px }
+  .fr-tn-paper + .fr-tn-theme { margin-left: -12px }   /* the icon where it was, the 44-px box beside BibTeX, not over it */
+  .fr-theme, .fr-legal-links a { display: inline-flex; align-items: center; min-height: 44px }
+  .fr-foot { padding-bottom: 76px }   /* v2: the last line of the footer and an opened panel stay clear of the back-to-the-top button */
+  .fr-btn::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; bottom: -2px }   /* 44 px to tap, 40 px to see */
+  .fr-totop { right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); width: 44px; height: 44px }
+}
+
+/* v2, phones: the small type one step larger (small 14 -> 15 px, fine 13 -> 14 px, the authors 15.5 -> 16 px); desktops keep
+   the scale above */
+@media (max-width: 520px) {
+  :root { --fr-size-small: 0.9375rem; --fr-size-fine: 0.875rem }
+  .fr-authors { font-size: 1rem }
+  /* the buttons a little lower on phones (36 px to see, 44 px to tap: 4 px above and below, which meet in the 8-px gap), so
+     that the two rows take as little of MinPair's opening as possible */
+  .fr-btn { height: 36px; padding: 0 14px 0 12px; gap: 6px; font-size: 0.875rem }
+  .fr-btn svg { width: 15px; height: 15px }
+  .fr-btn::before { top: -4px; bottom: -4px }
+}
+
+/* narrow phones: the section links give way one after the other, the paper links and the theme switch stay on one line */
+@media (max-width: 479px) { .fr-tn-opt2 { display: none } .fr-topnav { gap: 12px } }
+@media (max-width: 359px) { .fr-tn-links { display: none } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fr-topnav { transition: none }
+  .fr-flash { animation: none }
+  .fr-totop, .fr-totop.on, .fr-btn, .fr-btn .fr-soon { transition: none }
+}

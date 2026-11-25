@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en" data-paper="setcon" data-fr-store="setcon-theme">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SetCon: Setup-Conditioned IMU-Language Learning from 3D Human Motion</title>
+<meta name="description" content="SetCon estimates each device's mounting from a few unlabeled windows and provides it to its encoder instead of removing it. Lennart Schiweck, Alaa Saleh and Cristóbal Curio (Reutlingen University, Bosch Sensortec GmbH).">
+<meta name="color-scheme" content="light dark">
+<!-- Link preview. With pageUrl set in config.js, frame.js makes these addresses absolute; for crawlers, write the absolute addresses here too. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="SetCon: Setup-Conditioned IMU-Language Learning from 3D Human Motion">
+<meta property="og:description" content="SetCon estimates each device's mounting from a few unlabeled windows and provides it to its encoder instead of removing it.">
+<meta property="og:image" content="media/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235a48e0'/%3E%3Crect x='10.2' y='4.2' width='11.6' height='23.6' rx='3.8' fill='none' stroke='%23fff' stroke-width='2.4'/%3E%3Crect x='12.8' y='10.5' width='6.4' height='11' rx='1.6' fill='%23fff'/%3E%3C/svg%3E">
+<script>try { var t = localStorage.getItem("setcon-theme"); if (t === "dark" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<link rel="preload" href="fonts/InstrumentSans-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="frame/frame.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- slim top bar (frame): in once the hero's body has scrolled away -->
+<nav class="fr-topnav" id="topnav" data-fr-after=".fr-head .fr-btns" aria-label="Page">
+  <a class="fr-tn-brand" href="#top">SetCon</a>
+  <div class="fr-tn-links"><a class="fr-tn-opt" href="#method">Method</a><a href="#results">Results</a></div>
+  <!-- frame: the paper links in the top bar (frame.css .fr-tn-paper), as on the MinPair page (site_v16). Same order and targets as the
+       head block's link bar; data-fr-link gets its href from config.js (frame.js), a link without href is not shown. Files and other
+       sites open in a new tab; BibTeX jumps to the citation and rings it (data-fr-flash) -->
+  <div class="fr-tn-paper" role="group" aria-label="Paper and citation"><a class="fr-tn-main" href="paper/setcon.pdf" target="_blank" rel="noopener">Paper</a><a data-fr-link="arxiv" target="_blank">arXiv</a><a data-fr-link="code" target="_blank">Code</a><a data-fr-link="model" target="_blank">Model</a><a data-fr-link="data" target="_blank">Data</a><a href="#cite" data-fr-flash="bib">BibTeX</a></div>
+  <button class="fr-tn-theme" type="button" data-fr-theme aria-label="Switch between light and dark"><svg class="fr-sun" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="3.4"/><path d="M10 2.2v2M10 15.8v2M2.2 10h2M15.8 10h2M4.5 4.5l1.4 1.4M14.1 14.1l1.4 1.4M4.5 15.5l1.4-1.4M14.1 5.9l1.4-1.4"/></svg><svg class="fr-moon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M16.6 12.4A7 7 0 0 1 7.6 3.4a7 7 0 1 0 9 9z"/></svg></button>
+</nav>
+
+<!-- ============================================================ hero: the idea -->
+<section class="hero" id="top" aria-label="SetCon">
+  <div class="hero-main">
+    <div class="hero-text">
+      <header class="fr-head">
+        <h1 class="fr-title"><span class="fr-name">SetCon</span><span class="fr-sr">: </span><span class="fr-sub">Setup-Conditioned IMU-Language Learning from 3D Human Motion</span></h1>
+        <p class="fr-authors"><span>Lennart Schiweck<sup>1</sup></span>, <span>Alaa Saleh<sup>2</sup></span>, <span>Cristóbal Curio<sup>1</sup></span></p>
+        <p class="fr-affil"><span><sup>1</sup>Cognitive Systems Group, Reutlingen University, Germany</span><span><sup>2</sup>Bosch Sensortec GmbH, Germany</span></p>
+        <!-- frame v2: the buttons (frame.css .fr-btns); a button without a target in config.js stays greyed with "soon" -->
+        <nav class="fr-btns" aria-label="Paper, code and data"><a class="fr-btn" href="paper/setcon.pdf"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2.5h7l4 4v11H5z"/><path d="M12 2.5v4h4"/><path d="M7.6 10.5h4.8M7.6 13.5h4.8"/></svg><span class="fr-w">Paper</span></a><a class="fr-btn" data-fr-link="arxiv"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.75" y="3.25" width="14.5" height="4.25" rx="1"/><path d="M4.25 7.5v8.25c0 .7.55 1.25 1.25 1.25h9c.7 0 1.25-.55 1.25-1.25V7.5"/><path d="M8 11h4"/></svg><span class="fr-w">arXiv</span><span class="fr-soon">soon</span></a><a class="fr-btn" data-fr-link="code"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 6l-4 4 4 4M13 6l4 4-4 4"/></svg><span class="fr-w">Code</span><span class="fr-soon">soon</span></a><a class="fr-btn" data-fr-link="model"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3l7 3.4-7 3.4-7-3.4z"/><path d="M3 10l7 3.4 7-3.4M3 13.6L10 17l7-3.4"/></svg><span class="fr-w">Model</span><span class="fr-soon">soon</span></a><a class="fr-btn" data-fr-link="data"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="10" cy="5" rx="6.5" ry="2.5"/><path d="M3.5 5v10c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5V5"/><path d="M3.5 10c0 1.4 2.9 2.5 6.5 2.5s6.5-1.1 6.5-2.5"/></svg><span class="fr-w">Data</span><span class="fr-soon">soon</span></a><a class="fr-btn" href="#cite" data-fr-flash="bib"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.6 3C5.8 3 5.6 4 5.6 5.4v2.4c0 1.2-.6 2.2-2.1 2.2 1.5 0 2.1 1 2.1 2.2v2.4c0 1.4.2 2.4 2 2.4"/><path d="M12.4 3c1.8 0 2 1 2 2.4v2.4c0 1.2.6 2.2 2.1 2.2-1.5 0-2.1 1-2.1 2.2v2.4c0 1.4-.2 2.4-2 2.4"/></svg><span class="fr-w">BibTeX</span></a></nav>
+      </header>
+      <p class="tldr">SetCon estimates each device's mounting from a few unlabeled windows and provides it to its encoder instead of removing it.</p>
+      <div class="headline" id="headline" aria-label="Headline result">
+        <p class="hl-title">Zero-shot on 13 real datasets <span>mean accuracy in %</span></p>
+        <div class="hl-rows" id="hlRows"></div>
+        <div class="hl-legend" id="hlLegend"></div>
+      </div>
+    </div>
+    <div class="stage" id="stage" aria-label="A body in motion, seen close to the chosen body part, with one device and its other mountings on the same part">
+      <div class="hint" id="hint">Drag to look around</div>
+      <div class="viewctl"><div class="tabs sm" id="viewSeg" role="group" aria-label="View" hidden><button type="button" data-view="body" aria-pressed="true">Whole body</button><button type="button" data-view="close" aria-pressed="false">Close-up</button></div><button type="button" class="autoBtn" id="autoView" hidden>Resume automatic view</button></div>
+      <div class="status" id="status">Loading the body…</div>
+    </div>
+  </div>
+
+  <div class="strip-band" id="wear">
+  <div class="strip wrap">
+    <!-- v8 (20.11.): the choices as two menus in the look of the map's dataset menu (.dsel), the side inside the body-site menu
+         ("Left wrist"); the mountings slider carries the figure's one line, "Same movement, 12 mountings" -->
+    <div class="ctl" id="ctl">
+      <div class="menus">
+        <label class="dsel"><span class="dsel-lab">Activity</span><span class="dsel-box"><select id="actSel" autocomplete="off"></select></span></label>
+        <label class="dsel"><span class="dsel-lab">Worn on</span><span class="dsel-box"><select id="siteSel" autocomplete="off"></select></span></label>
+      </div>
+      <div class="wearing"><label class="pay" id="payoff" for="nwear">Same movement, 12 mountings</label><input id="nwear" type="range" min="1" max="24" step="1" value="12" aria-describedby="wearNote"></div>
+    </div>
+    <div class="legend" id="wearNote"><span><i class="sw-line"></i><span id="legFirst">one mounting</span></span><span id="legOthersWrap"><i class="sw-thin"></i><span id="legOthers">the other 11</span></span></div>
+    <div class="fan" id="fanWrap">
+      <div class="fan-grid">
+        <h3 class="fan-h hdev">Device signals</h3>
+        <h3 class="fan-h henc">Encoder input</h3>
+        <div class="fan-canvas cdev"><canvas id="scopeDev" aria-label="The last five seconds of the six device channels, one trace per mounting"></canvas></div>
+        <div class="fan-canvas cenc"><canvas id="scopeEnc" aria-label="The last five seconds of the six channels the encoder reads, rotated so that gravity points up, one trace per mounting"></canvas></div>
+        <div class="fan-ref cref">
+          <div class="fan-canvas ref"><canvas id="scopeRef" aria-label="The last five seconds of the three reference channels, gravity in the segment frame, one trace per mounting"></canvas></div>
+          <label class="switch sm" id="zeroEnc"><input type="checkbox" id="zeroEncSwitch"><i></i><span>reference zeroed</span></label>
+          <p class="small" id="encNote" hidden></p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ============================================================ 1: what invariant encoders throw away -->
+<section class="sec" id="forgetting" aria-labelledby="h-forgetting">
+  <div class="wrap">
+    <header>
+      <h2 class="fr-h2 finding wide" id="h-forgetting">IMU-language models trained on 3D motion confuse sitting, standing and lying</h2>
+      <p class="fr-lead deck">SetCon estimates the mounting and keeps the direction of gravity relative to the body, which separates these postures.</p>
+    </header>
+    <div class="fig post" id="post">
+      <div class="post-a">
+        <h3 class="post-h"><b>a</b> Same window, two postures</h3>
+        <svg class="post-svg" viewBox="0 0 320 338" role="img" aria-label="A standing person with a device at the hip whose x axis points up along the body, and a person lying on the back with the same device turned so that its x axis points up across the body: both record 9.8 m/s² on x and 0 on y and z">
+          <defs>
+            <marker id="ahI" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"></path></marker>
+            <marker id="ahA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"></path></marker>
+            <symbol id="win" viewBox="0 0 44 24"><rect x="0.75" y="0.75" width="42.5" height="22.5" rx="4" fill="var(--bg)" stroke="var(--ink-3)" stroke-width="1.2"></rect><path d="M7 12c3-7 5 7 8 0s5 7 8 0 5 7 8 0 4 6 6 2" fill="none" stroke="var(--ink-2)" stroke-width="1.3" stroke-linecap="round"></path></symbol>
+          </defs>
+          <image class="li" href="media/body_stand_light.png" x="46" y="12" width="53" height="200"></image>
+          <image class="da" href="media/body_stand_dark.png" x="46" y="12" width="53" height="200"></image>
+          <rect x="60" y="102.5" width="7" height="4.5" rx="1" fill="var(--watch)"></rect>
+          <line x1="63.5" y1="100" x2="63.5" y2="72" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#ahI)"></line>
+          <text x="57" y="70" text-anchor="end" class="t">device x</text>
+          <rect x="122" y="22" width="190" height="112" rx="8" fill="var(--bg-2)"></rect>
+          <text x="134" y="42" class="t b">both record this window</text>
+          <g class="t"><text x="134" y="68">acc x</text><line x1="172" y1="64" x2="246" y2="64" stroke="var(--ax-x)" stroke-width="1.8"></line><text x="254" y="68">9.8 m/s²</text></g>
+          <g class="t"><text x="134" y="92">acc y</text><line x1="172" y1="88" x2="246" y2="88" stroke="var(--ax-y)" stroke-width="1.8"></line><text x="254" y="92">0</text></g>
+          <g class="t"><text x="134" y="116">acc z</text><line x1="172" y1="112" x2="246" y2="112" stroke="var(--ax-z)" stroke-width="1.8"></line><text x="254" y="116">0</text></g>
+          <text x="122" y="166" class="t q">standing or lying?</text>
+          <text x="290" y="166" text-anchor="end" class="t m">gravity</text>
+          <line x1="300" y1="152" x2="300" y2="180" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#ahI)"></line>
+          <image class="li" href="media/body_lie_light.png" x="56" y="252" width="250" height="66.2"></image>
+          <image class="da" href="media/body_lie_dark.png" x="56" y="252" width="250" height="66.2"></image>
+          <rect x="186" y="273" width="7" height="4.5" rx="1" fill="var(--watch)"></rect>
+          <line x1="189.5" y1="270" x2="189.5" y2="240" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#ahI)"></line>
+          <text x="196" y="240" class="t">device x</text>
+        </svg>
+      </div>
+      <div class="post-b">
+        <h3 class="post-h"><b>b</b> Six unlabeled windows tell how it is mounted</h3>
+        <svg class="post-svg" viewBox="0 0 360 318" role="img" aria-label="Six unlabeled windows of the device and its body site, the hip, go into the calibrator, which estimates how the device is mounted. Device x along the body means standing, device x across the body means lying">
+          <use href="#win" x="8" y="52" width="44" height="24"></use><use href="#win" x="11" y="72" width="44" height="24"></use><use href="#win" x="14" y="92" width="44" height="24"></use>
+          <use href="#win" x="17" y="112" width="44" height="24"></use><use href="#win" x="20" y="132" width="44" height="24"></use><use href="#win" x="23" y="152" width="44" height="24"></use>
+          <text x="8" y="200" class="t m">any activity,</text><text x="8" y="214" class="t m">no labels</text>
+          <line x1="72" y1="118" x2="100" y2="118" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ahA)"></line>
+          <text x="150" y="64" text-anchor="middle" class="t m">body site hip</text>
+          <line x1="150" y1="70" x2="150" y2="86" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ahA)"></line>
+          <rect x="106" y="92" width="88" height="54" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.3"></rect>
+          <text x="150" y="123" text-anchor="middle" class="t b">calibrator</text>
+          <line x1="194" y1="108" x2="224" y2="86" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ahA)"></line>
+          <line x1="194" y1="132" x2="218" y2="222" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ahA)"></line>
+          <text x="232" y="30" class="t b a">estimate</text>
+          <image class="li" href="media/body_stand_light.png" x="232" y="40" width="26.5" height="100"></image>
+          <image class="da" href="media/body_stand_dark.png" x="232" y="40" width="26.5" height="100"></image>
+          <rect x="240" y="84.5" width="4.5" height="3" rx="0.8" fill="var(--watch)"></rect>
+          <line x1="242.2" y1="82" x2="242.2" y2="60" stroke="var(--ink)" stroke-width="1.3" marker-end="url(#ahI)"></line>
+          <text x="268" y="70" class="t">device x</text><text x="268" y="85" class="t b">= body up</text>
+          <image class="li" href="media/body_lie_light.png" x="210" y="232" width="100" height="26.5"></image>
+          <image class="da" href="media/body_lie_dark.png" x="210" y="232" width="100" height="26.5"></image>
+          <rect x="261.5" y="239.5" width="4.5" height="3" rx="0.8" fill="var(--watch)"></rect>
+          <line x1="263.7" y1="237" x2="263.7" y2="212" stroke="var(--ink)" stroke-width="1.3" marker-end="url(#ahI)"></line>
+          <text x="272" y="206" class="t">device x</text><text x="272" y="221" class="t b">= body front</text>
+          <text x="8" y="292" class="t m">gravity along the body means standing</text>
+          <text x="8" y="308" class="t m">gravity across the body means lying</text>
+        </svg>
+      </div>
+      <div class="post-c">
+        <h3 class="post-h"><b>c</b> Predicted posture</h3>
+        <p class="post-sub">Each row gives the percent of one true posture predicted as sitting, standing or lying, on seven real datasets with anchors. The framed diagonal marks correct predictions.</p>
+        <div class="cm-grid" id="cms"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 2: how -->
+<section class="sec" id="method" aria-labelledby="h-method">
+  <div class="wrap">
+    <header>
+      <h2 class="fr-h2 finding" id="h-method">Trained on simulated devices, applied to real ones</h2>
+      <p class="fr-lead deck">In simulation the true mounting is known, which gives the calibrator its target.</p>
+    </header>
+    <figure class="method" id="methodFig">
+      <div class="method-pan" id="methodPan">
+        <button type="button" class="method-img" id="methodOpen" aria-label="Enlarge the method figure">
+          <picture><source type="image/webp" srcset="media/fig2_method.webp"><img src="media/fig2_method.png" alt="Overview of SetCon. Top row, how the graph encoder reads a device: a virtual device on the body; gravity canonicalization gives the acceleration and rotation rate; unlabeled windows and the body site go into the calibrator, which outputs the setup reference Q̂ and with it gravity in the segment frame; the graph encoder holds one token per site and 0.2-s patch, runs 8 graph blocks along bones and time and averages over time and worn sites into the window embedding v. Bottom row: stage 1, motion pretraining on 3D bodies, one movement in four views, graph encoder and predictor trained with the loss L1, the query being the target site and its setup reference, and the calibrator trained with L_cal against the true mounting, known in simulation; stage 2, caption alignment, the graph encoder trained with L2 against narrations and generated captions in the frozen CLIP text encoder, with calibrator errors from an error bank applied to each window's mounting; test on a real device with fixed weights, 12 unlabeled windows of which the calibrator keeps 6, and the nearest class among class names or anchors." width="3300" height="945" decoding="async" loading="lazy"></picture>
+        </button>
+      </div>
+      <div class="method-tools"><button type="button" class="enlarge" id="methodEnlarge">Enlarge</button><span class="muted pan-hint">pan sideways to read it</span></div>
+    </figure>
+    <dialog class="lightbox" id="lightbox" aria-label="The method figure, enlarged">
+      <div class="lb-scroll"><picture><source type="image/webp" srcset="media/fig2_method.webp"><img src="media/fig2_method.png" alt="" width="3300" height="945"></picture></div>
+      <button type="button" class="lb-close" id="lbClose">Close</button>
+    </dialog>
+  </div>
+</section>
+
+<!-- ============================================================ 3: embeddings of the test datasets (UCI-HAR = the data of the paper's Fig. 3) -->
+<section class="sec" id="evidence" aria-labelledby="h-evidence">
+  <div class="wrap">
+    <header>
+      <h2 class="fr-h2 finding" id="h-evidence">SetCon keeps the postures apart</h2>
+      <p class="fr-lead deck">Each dot is one window of <span id="mapDsName">UCI-HAR</span> in the first two principal components of a model's embeddings, shown for one model after another.</p>
+    </header>
+    <div class="controls">
+      <div class="seg big" role="group" aria-label="Model"><i class="ind"></i><button type="button" data-model="unimts" aria-pressed="false">UniMTS</button><button type="button" data-model="anymo" aria-pressed="false">AnyMo</button><button type="button" data-model="mix" aria-pressed="true">SetCon</button><button type="button" data-model="wo" aria-pressed="false" aria-label="SetCon, no reference"><span class="lbl-l">SetCon, no reference</span><span class="lbl-s">No reference</span></button></div>
+      <span class="spacer"></span>
+      <div class="mapsel">
+        <label class="dsel"><span class="dsel-lab">Dataset</span><span class="dsel-box"><select id="mapDsSel" autocomplete="off"><option value="dsads">DSADS</option><option value="motionsense">MotionSense</option><option value="opportunity">Opportunity</option><option value="pamap2">PAMAP2</option><option value="realworld">RealWorld</option><option value="shoaib">Shoaib</option><option value="tndahar">TNDA-HAR</option><option value="ucihar" selected>UCI-HAR</option><option value="uschad">USC-HAD</option><option value="utcomplex">UT-Complex</option><option value="utdmhad">UTD-MHAD</option><option value="whar">w-HAR</option><option value="wisdm">WISDM</option></select></span></label>
+        <div class="seg sm" role="group" aria-label="Classes"><i class="ind"></i><button type="button" data-cls="post" aria-pressed="true">Postures</button><button type="button" data-cls="all" aria-pressed="false">All classes</button></div>
+      </div>
+    </div>
+    <div class="fig map-wrap" id="mapWrap"><div class="corner" id="mapCorner"></div><canvas id="map" aria-label="The windows of UCI-HAR in the first two principal components of the selected model's embeddings"></canvas><canvas id="mapFade" aria-hidden="true"></canvas><div class="key map-key" id="mapKey"></div><div class="map-tip" id="mapTip" hidden></div><div id="mapLoad" class="muted">Loading the embeddings…</div></div>
+    <div class="key map-cls" id="mapCls" hidden></div>
+  </div>
+</section>
+
+<!-- ============================================================ 4: results -->
+<section class="sec" id="results" aria-labelledby="h-results">
+  <div class="wrap">
+    <header>
+      <h2 class="fr-h2 finding wide" id="h-results">56&nbsp;% higher zero-shot accuracy than the previous state of the art on 13 real datasets</h2>
+      <p class="fr-lead deck">SetCon with anchors reaches 65.3&nbsp;% against 41.8&nbsp;% for AnyMo with class names. Anchors average the text embeddings of a class name and of activity descriptions and need no labeled window.</p>
+    </header>
+    <div class="results">
+      <div class="chart" id="chart" aria-label="Mean accuracy on 13 real datasets per model, with class names and with anchors"></div>
+      <p class="caption">SetCon rows give the mean of three seeds. UniMTS and AnyMo are scored on the same windows as SetCon in the last row.</p>
+      <details class="disc tbl-disc"><summary>The numbers as a table</summary>
+      <table class="tbl" id="tbl">
+        <thead><tr><th>Model</th><th class="n">Class names</th><th class="n">Anchors</th></tr></thead>
+        <tbody></tbody>
+        <caption>Mean accuracy in percent, with the standard deviation over three seeds for SetCon.</caption>
+      </table>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ citation (frame) -->
+<section class="sec" id="cite" aria-labelledby="h-cite">
+  <div class="wrap">
+    <div class="fr-cite">
+      <h2 class="fr-h2" id="h-cite">Citation</h2>
+      <pre class="fr-bib" id="bib" data-fr-bib>@misc{schiweck2026setcon,
+  title  = {{SetCon}: Setup-Conditioned {IMU}-Language Learning from {3D} Human Motion},
+  author = {Schiweck, Lennart and Saleh, Alaa and Curio, Crist\'{o}bal},
+  year   = {2026}
+}</pre>
+      <p class="fr-links"><button type="button" data-fr-copy="bib">Copy</button><a href="paper/setcon.pdf">Paper</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ footer (frame) -->
+<footer class="fr-foot">
+  <div class="fr-fin">
+    <span class="fr-band"><img src="frame/BW_EU_Logo_en.svg" width="2181" height="189" alt="Baden-Württemberg. Co-funded by the European Union"></span>
+    <p class="fr-fund">This work was funded by the European Regional Development Fund (ERDF) within the project <a href="https://aida.reutlingen-university.de/" rel="noopener">AIDA</a> (grant FEIH 2476184).</p>
+    <p class="fr-credits">Motion from five Nymeria clips (Meta Reality Labs, <a href="https://creativecommons.org/licenses/by-nc/4.0/" rel="noopener license">CC BY-NC 4.0</a>) on the Momentum Human Rig (<a href="licenses/MHR-Apache-2.0.txt">Apache 2.0</a>), with devices and signals simulated from them. The embedding maps use the first seed of SetCon. three.js (MIT), Instrument Sans (OFL).</p>
+    <div class="fr-colo"><p>Lennart Schiweck, Cognitive Systems Group, Reutlingen University</p><p class="fr-legal-links"><a href="#fr-imprint" data-fr-legal aria-controls="fr-imprint" aria-expanded="false">Imprint</a><a href="#fr-privacy" data-fr-legal aria-controls="fr-privacy" aria-expanded="false">Privacy</a></p><p><button class="fr-theme" type="button" data-fr-theme aria-label="Switch between light and dark"><span class="fr-t-dark">Dark theme</span><span class="fr-t-light">Light theme</span></button></p></div>
+    <!-- frame v2: imprint and privacy, opened from the links above (frame.js; without JavaScript through #fr-imprint / #fr-privacy) -->
+    <section class="fr-legal-panel" id="fr-imprint" aria-label="Imprint"><p>Lennart Schiweck<br>Cognitive Systems Group, Reutlingen University (Hochschule Reutlingen)<br>Alteburgstraße 150, 72762 Reutlingen, Germany<span data-fr-email><br><span class="fr-email">lennart.schiweck [at] reutlingen-university.de</span></span></p></section>
+    <section class="fr-legal-panel" id="fr-privacy" aria-label="Privacy"><p>This page sets no cookies, uses no tracking and loads no external fonts or scripts. It is hosted on GitHub Pages; see the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub General Privacy Statement</a>.</p></section>
+  </div>
+</footer>
+<!-- frame v2: back to the top, in once the hero (#top) has gone above the screen -->
+<button class="fr-totop" type="button" data-fr-after="#top" aria-label="Back to the top of the page"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 15.5v-11M5 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/GLTFLoader.js"></script>
+<script src="app.js"></script>
+<script src="config.js"></script>
+<script src="frame/frame.js"></script>
+</body>
+</html>
