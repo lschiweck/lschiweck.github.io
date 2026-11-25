@@ -726,7 +726,10 @@
   const GVAR = { locomotion: "--c1", "hand/arm": "--c2", "other whole-body": "--c3", transition: "--c4", dirlr: "--c5", posture: "--c6", dirvert: "--c7" };
   const GORDER = ["posture", "dirvert", "dirlr", "locomotion", "hand/arm", "other whole-body", "transition"];     // the rows of Tab. 3
   const MAX_INDIVIDUAL = 8;
-  const MANY = ["#0072B2", "#009E73", "#E69F00", "#CC79A7", "#D55E00", "#56B4E9", "#33DD99", "#AA3366", "#776600", "#8855BB", "#CCAAFF", "#88AA00", "#FF9999", "#8888EE", "#007766", "#998844", "#AA4411", "#AACC44", "#0099BB", "#996688", "#33BBAA", "#448800", "#CC8866", "#CC5566", "#FF88CC", "#BB55AA", "#AAAA66"];                                                                                      // colours told apart in a scatter (all pairs)
+  const MANY = ["#0072B2", "#009E73", "#E69F00", "#CC79A7", "#D55E00", "#56B4E9", "#66EE99", "#EEBBFF", "#8877DD", "#88BB44", "#998822", "#FFBB99", "#88DDEE", "#BB99FF", "#FF7766", "#00CCAA", "#EECC22", "#FF88CC", "#0099BB", "#BBCC88", "#DD5566", "#CC8855", "#DD9999", "#7799FF", "#BB66CC", "#669900", "#AABBFF"];
+  // "All classes" draws on a dark field (styles.css .map-wrap.allc): up to eight classes take the eight validated colours in their
+  // dark-theme form (wine and indigo lighter), whatever the page theme
+  const CDARK = ["#0072B2", "#009E73", "#E69F00", "#CC79A7", "#D55E00", "#56B4E9", "#8d5586", "#a07cff"];                                                                                      // colours told apart in a scatter (all pairs)
   const dsSel = $("mapDsSel");
   dsSel.value = "ucihar";                                                                                        // the paper's figure, also after a reload
   const DSCACHE = {};
@@ -747,11 +750,11 @@
     const byGroup = present.filter(Boolean).length > MAX_INDIVIDUAL;
     let s = 0; const slot = present.map((p) => (p ? s++ : -1));
     // above eight classes: every class its own colour from MANY (27 colours, farthest apart in OKLab after the six of Fig. 3,
-    // mid lightness for both themes; _scratch/v433_hf_card/palette27.py), handed out in the order of the groups of Tab. 3
+    // light enough for the dark field; _scratch/v433_hf_card/palette27.py), handed out in the order of the groups of Tab. 3
     const order = GORDER.flatMap((g) => D.classes.map((_, k) => k).filter((k) => present[k] && D.group[k] === g));
     D.classes.forEach((_, k) => { if (present[k] && !order.includes(k)) order.push(k); });
     const many = {}; order.forEach((k, i) => { many[k] = MANY[i % MANY.length]; });
-    const cvar = D.classes.map((_, k) => (!present[k] ? null : byGroup ? many[k] : CVAR[slot[k]]));
+    const cvar = D.classes.map((_, k) => (!present[k] ? null : byGroup ? many[k] : CDARK[slot[k]]));
     const pvar = D.posture.map((p) => (p ? PVAR[p] : "--map-rest"));
     return { D, n, K, R, lab, others, posts, all, present, byGroup, cvar, pvar, hasPost: isPost.some((p, k) => p && present[k]) };
   }
@@ -862,6 +865,7 @@
           c += `<div class="kg">${item(k, D.group_names[gk], null, " kgh")}<span class="kcs">${k.map((x) => item([x], D.classes[x], P.cvar[x], " kc")).join("")}</span></div>`;
         }
       }
+      wrapEl.classList.toggle("allc", mode !== "post");   // all classes: a dark field, on which the many class colours stand out
       keyEl.innerHTML = h; clsEl.innerHTML = c; clsEl.hidden = !c; keyEl.classList.toggle("gm", !!c);   // phone: the class list carries the groups
       markKey();
     }
