@@ -722,10 +722,10 @@
   //   fixed order --c1..--c7 (the six colours of the paper's Fig. 3, then wine); above seven classes the colour is the class's motion group
   //   of the paper's Tab. 3, and a class stands out on hover or tap of its legend entry or of one of its dots.
   const PVAR = { sit: "--sit", stand: "--stand", lie: "--back" };
-  const CVAR = ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6", "--c7"];
+  const CVAR = ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6", "--c7", "--c8"];
   const GVAR = { locomotion: "--c1", "hand/arm": "--c2", "other whole-body": "--c3", transition: "--c4", dirlr: "--c5", posture: "--c6", dirvert: "--c7" };
   const GORDER = ["posture", "dirvert", "dirlr", "locomotion", "hand/arm", "other whole-body", "transition"];     // the rows of Tab. 3
-  const MAX_INDIVIDUAL = 7;                                                                                      // colours told apart in a scatter (all pairs)
+  const MAX_INDIVIDUAL = 8;                                                                                      // colours told apart in a scatter (all pairs)
   const dsSel = $("mapDsSel");
   dsSel.value = "ucihar";                                                                                        // the paper's figure, also after a reload
   const DSCACHE = {};
@@ -745,7 +745,17 @@
     const present = D.count.map((c) => c > 0);
     const byGroup = present.filter(Boolean).length > MAX_INDIVIDUAL;
     let s = 0; const slot = present.map((p) => (p ? s++ : -1));
-    const cvar = D.classes.map((_, k) => (!present[k] ? null : byGroup ? GVAR[D.group[k]] : CVAR[slot[k]]));
+    // above eight classes: the group colour, each class of a group in its own shade from darker to lighter ("--cN@t": t < 0 mixes
+    // toward black, t > 0 toward white), so that every class has its own colour and the group stays recognisable
+    const gN = {}, gI = {};
+    D.classes.forEach((_, k) => { if (present[k]) gN[D.group[k]] = (gN[D.group[k]] || 0) + 1; });
+    const cvar = D.classes.map((_, k) => {
+      if (!present[k]) return null;
+      if (!byGroup) return CVAR[slot[k]];
+      const g = D.group[k], m = gN[g], j = (gI[g] = (gI[g] ?? -1) + 1);
+      const s = m > 1 ? Math.round((-0.42 + 0.84 * j / (m - 1)) * 100) / 100 : 0;
+      return s ? `${GVAR[g]}@${s}` : GVAR[g];
+    });
     const pvar = D.posture.map((p) => (p ? PVAR[p] : "--map-rest"));
     return { D, n, K, R, lab, others, posts, all, present, byGroup, cvar, pvar, hasPost: isPost.some((p, k) => p && present[k]) };
   }
@@ -760,7 +770,13 @@
     let P = null, mode = "post", userMode = null;
     const state = { model: "mix", from: "mix", to: "mix", t: 1 };
     let cur = new Float32Array(0), cuy = cur, al = cur;
-    const COLS = {}; const col = (v) => COLS[v] || (COLS[v] = css(v));
+    const shade = (c, s) => {
+      let m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c); if (!m) return c;
+      let h = m[1]; if (h.length === 3) h = h.replace(/./g, (x) => x + x);
+      const n = parseInt(h, 16), w = s > 0 ? 255 : 0, a = Math.abs(s), f = (x) => Math.round(x + (w - x) * a);
+      return `rgb(${f(n >> 16)}, ${f((n >> 8) & 255)}, ${f(n & 255)})`;
+    };
+    const COLS = {}; const col = (v) => COLS[v] || (COLS[v] = v.includes("@") ? shade(css(v.split("@")[0]), +v.split("@")[1]) : css(v));
     onTheme(() => { for (const k in COLS) delete COLS[k]; });
     // ---------------------------------------------------------------- coordinates between two models
     function lerpCoords() {
@@ -836,7 +852,8 @@
     function drawAll() { lerpCoords(); drawMap(); }
     // ---------------------------------------------------------------- the legend
     const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-    const item = (ks, label, v, extra = "") => `<button type="button" class="ki${extra}" data-k="${ks.join(",")}" aria-pressed="false">${v ? `<i style="background:var(${v})"></i>` : ""}${label}</button>`;
+    const bgOf = (v) => { if (!v.includes("@")) return `var(${v})`; const [nm, st] = v.split("@"), s = +st; return `color-mix(in srgb, var(${nm}), ${s > 0 ? "white" : "black"} ${Math.round(Math.abs(s) * 100)}%)`; };
+    const item = (ks, label, v, extra = "") => `<button type="button" class="ki${extra}" data-k="${ks.join(",")}" aria-pressed="false">${v ? `<i style="background:${bgOf(v)}"></i>` : ""}${label}</button>`;
     function renderKey() {
       const D = P.D, ks = (f) => D.classes.map((_, k) => k).filter((k) => P.present[k] && f(k));
       let h = "", c = "";
@@ -851,7 +868,7 @@
         for (const gk of GORDER) {
           const k = ks((x) => D.group[x] === gk); if (!k.length) continue;
           h += item(k, D.group_names[gk], GVAR[gk]);
-          c += `<div class="kg">${item(k, D.group_names[gk], GVAR[gk], " kgh")}<span class="kcs">${k.map((x) => item([x], D.classes[x], GVAR[gk], " kc")).join("")}</span></div>`;
+          c += `<div class="kg">${item(k, D.group_names[gk], GVAR[gk], " kgh")}<span class="kcs">${k.map((x) => item([x], D.classes[x], P.cvar[x], " kc")).join("")}</span></div>`;
         }
       }
       keyEl.innerHTML = h; clsEl.innerHTML = c; clsEl.hidden = !c; keyEl.classList.toggle("gm", !!c);   // phone: the class list carries the groups
