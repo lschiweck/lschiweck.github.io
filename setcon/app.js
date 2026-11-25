@@ -864,18 +864,24 @@
       keyEl.innerHTML = h; clsEl.innerHTML = c; clsEl.hidden = !c; keyEl.classList.toggle("gm", !!c);   // phone: the class list carries the groups
       markKey();
     }
+    // several classes can be pinned at once: a click on a class (legend or dot) adds it to the pinned set or takes it out again,
+    // a click on a group adds or removes all its classes, a click on empty map space clears the set; hover previews on top of it
+    const toSet = (s) => new Set(s ? s.split(",") : []);
+    const fromSet = (S) => (S.size ? [...S].sort((a, b) => a - b).join(",") : null);
+    const onKeys = () => { const S = toSet(pinK); if (hoverK) hoverK.split(",").forEach((k) => S.add(k)); return fromSet(S); };
+    const togglePin = (ks) => { const S = toSet(pinK), a = ks.split(","), all = a.every((k) => S.has(k)); a.forEach((k) => (all ? S.delete(k) : S.add(k))); pinK = fromSet(S); };
     function markKey() {
-      const on = hoverK || pinK, set = on ? on.split(",") : [];
+      const on = onKeys(), set = on ? on.split(",") : [], pinned = toSet(pinK);
       for (const el of keyEls) {
         el.classList.toggle("hl", !!on);
         el.querySelectorAll(".ki").forEach((b) => {
           const ks = b.dataset.k;
-          b.classList.toggle("on", !!on && ks.split(",").every((k) => set.includes(k))); b.setAttribute("aria-pressed", String(ks === pinK));
+          b.classList.toggle("on", !!on && ks.split(",").every((k) => set.includes(k))); b.setAttribute("aria-pressed", String(ks.split(",").every((k) => pinned.has(k))));
         });
       }
     }
     function applyHL() {
-      const on = hoverK || pinK;
+      const on = onKeys();
       if (on === hl.key) return;
       hl.key = on; markKey();
       if (on) { const m = new Uint8Array(P.K); on.split(",").forEach((k) => { m[+k] = 1; }); hl.set = m; }
@@ -888,7 +894,7 @@
       el.addEventListener("pointerleave", () => { hoverK = null; applyHL(); });
       el.addEventListener("focusin", (e) => { hoverK = kOf(e); applyHL(); });
       el.addEventListener("focusout", () => { hoverK = null; applyHL(); });
-      el.addEventListener("click", (e) => { const k = kOf(e); if (!k) return; pinK = pinK === k ? null : k; hoverK = null; tip.hidden = true; applyHL(); });
+      el.addEventListener("click", (e) => { const k = kOf(e); if (!k) return; togglePin(k); hoverK = null; tip.hidden = true; applyHL(); });
     }
     // on a phone the legend goes under the map (the head band is too narrow there)
     const phone = matchMedia("(max-width: 760px)");
@@ -918,10 +924,9 @@
     });
     mapC.addEventListener("pointerleave", () => { tip.hidden = true; if (hoverK) { hoverK = null; applyHL(); } });
     mapC.addEventListener("click", (e) => {
-      if (e.pointerType === "mouse") return;
-      const { i, px, py } = pointAt(e, 18);
-      if (i < 0) { pinK = null; tip.hidden = true; applyHL(); return; }
-      pinK = String(P.lab[i]); showTip(i, px, py); applyHL();
+      const { i, px, py } = pointAt(e, e.pointerType === "mouse" ? 10 : 18);
+      if (i < 0) { pinK = null; hoverK = null; tip.hidden = true; applyHL(); return; }
+      togglePin(String(P.lab[i])); hoverK = null; if (e.pointerType !== "mouse") showTip(i, px, py); applyHL();
     });
     // ---------------------------------------------------------------- model
     function regroup() { $("mapCorner").innerHTML = `<b>${P.D.titles[state.model]}</b>`; }
