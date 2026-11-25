@@ -38,9 +38,9 @@ window.SITE_CONFIG = {
     },
     pubs: {
       setcon:  { title: "setcon/",  page: "setcon/",  paper: "setcon/paper/setcon.pdf",   arxiv: "2611.32548", primaryClass: "cs.CV",
-                code: "", model: "", data: "" },
+                code: "", model: "https://huggingface.co/lschiweck/SetCon", data: "https://huggingface.co/datasets/lschiweck/SetCon-eval" },
       minpair: { title: "minpair/", page: "minpair/", paper: "minpair/paper/minpair.pdf", arxiv: "2611.32549", primaryClass: "cs.CV",
-                code: "", model: "", data: "" },
+                code: "", model: "https://huggingface.co/lschiweck/MinPair", data: "" },
       // GI VR/AR Workshop 2026 (LNI), to appear: paper stays empty until the published version has an address (PLACEHOLDER);
       // then set title to the paper too
       npc:     { title: "papers/npc_gi_vrar_2026.pdf", paper: "papers/npc_gi_vrar_2026.pdf", code: "https://github.com/lschiweck/LLM-NPC-Agents", video: "https://youtu.be/Z-WZ-Prl8bI" },

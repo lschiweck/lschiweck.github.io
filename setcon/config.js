@@ -9,8 +9,8 @@ window.SITE_CONFIG = {
   arxiv: "2611.32548",
   primaryClass: "cs.CV",
   code: "",
-  model: "",
-  data: "",
+  model: "https://huggingface.co/lschiweck/SetCon",
+  data: "https://huggingface.co/datasets/lschiweck/SetCon-eval",
   pageUrl: "https://lschiweck.github.io/setcon/",
   imprintEmail: "lennart.schiweck [at] reutlingen-university.de"
 };

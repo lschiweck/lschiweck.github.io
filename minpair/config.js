@@ -9,7 +9,7 @@ window.SITE_CONFIG = {
   arxiv: "2611.32549",
   primaryClass: "cs.CV",
   code: "",
-  model: "",
+  model: "https://huggingface.co/lschiweck/MinPair",
   data: "",
   pageUrl: "https://lschiweck.github.io/minpair/",
   imprintEmail: "lennart.schiweck [at] reutlingen-university.de"
