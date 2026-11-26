@@ -258,3 +258,12 @@ body { margin: 0; background: var(--fr-bg); color: var(--fr-ink); font: 400 var(
   .fr-flash { animation: none }
   .fr-totop, .fr-totop.on, .fr-btn, .fr-btn .fr-soon { transition: none }
 }
+
+/* back to the homepage: the name before the page's name in the top bar, in the author line and in the footer */
+.fr-tn-home { color: var(--fr-ink-2); font-size: 0.9375rem; padding: 6px 0; white-space: nowrap }
+.fr-tn-home::after { content: "/"; margin-left: 14px; color: var(--fr-ink-3) }
+.fr-tn-home:hover { color: var(--fr-ink) }
+.fr-topnav .fr-tn-home + .fr-tn-brand { margin-left: -8px }
+.fr-authors a.fr-me, .fr-colo a { color: inherit; text-decoration: underline; text-decoration-color: var(--fr-line-2); text-underline-offset: 3px }
+.fr-authors a.fr-me:hover, .fr-colo a:hover { text-decoration-color: currentColor }
+@media (max-width: 640px) { .fr-tn-home { font-size: 0; padding: 9px 0 } .fr-tn-home::before { content: "\2190"; font-size: 1rem } .fr-tn-home::after { display: none } }

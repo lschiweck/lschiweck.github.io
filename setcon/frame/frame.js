@@ -76,6 +76,8 @@
   doc.querySelectorAll(".fr-topnav[data-fr-after]").forEach((nav) => {
     const el = doc.querySelector(nav.dataset.frAfter); if (!el) return;
     new IntersectionObserver((es) => nav.classList.toggle("on", !es[es.length - 1].isIntersecting), { threshold: 0 }).observe(el);
+    const byScroll = () => nav.classList.toggle("on", el.getBoundingClientRect().bottom < 0);
+    addEventListener("scroll", byScroll, { passive: true }); byScroll();
   });
 
   // ---------------------------------------------------------------- v2: back to the top
