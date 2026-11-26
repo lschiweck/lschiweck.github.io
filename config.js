@@ -41,9 +41,8 @@ window.SITE_CONFIG = {
                 code: "", model: "https://huggingface.co/lschiweck/SetCon", data: "https://huggingface.co/datasets/lschiweck/SetCon-eval" },
       minpair: { title: "minpair/", page: "minpair/", paper: "minpair/paper/minpair.pdf", arxiv: "2611.32549", primaryClass: "cs.CV",
                 code: "", model: "", data: "" },
-      // GI VR/AR Workshop 2026 (LNI), to appear: paper stays empty until the published version has an address (PLACEHOLDER);
-      // then set title to the paper too
-      npc:     { title: "papers/npc_gi_vrar_2026.pdf", paper: "papers/npc_gi_vrar_2026.pdf", code: "https://github.com/lschiweck/LLM-NPC-Agents", video: "https://youtu.be/Z-WZ-Prl8bI" },
+      // GI VR/AR Workshop 2026 (LNI), published: DOI 10.18420/givrar2026_12 (GI Digital Library)
+      npc:     { title: "https://doi.org/10.18420/givrar2026_12", paper: "https://doi.org/10.18420/givrar2026_12", code: "https://github.com/lschiweck/LLM-NPC-Agents", video: "https://youtu.be/Z-WZ-Prl8bI" },
       concert: { title: "https://arxiv.org/abs/2610.35816", paper: "", arxiv: "2610.35816", primaryClass: "cs.MM" },
       flta:    { title: "https://ieeexplore.ieee.org/document/11336340/", paper: "https://ieeexplore.ieee.org/document/11336340/" },
       eccvw:   { title: "https://doi.org/10.1007/978-3-031-92591-7_17", paper: "https://doi.org/10.1007/978-3-031-92591-7_17" }
